@@ -23,6 +23,7 @@ import model.Hotel;
 
 public class MainActivity extends AppCompatActivity implements HotelAdapter.IHotelAdapter {
     public static final String HOTEL = "hotel";
+    public static final int REQUEST_CODE_ADD = 88;
     ArrayList<Hotel> mList = new ArrayList<>();
     HotelAdapter mAdapter;
     @Override
@@ -36,8 +37,7 @@ public class MainActivity extends AppCompatActivity implements HotelAdapter.IHot
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                goAdd();
             }
         });
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -49,12 +49,26 @@ public class MainActivity extends AppCompatActivity implements HotelAdapter.IHot
         fillData();
     }
 
+    private void goAdd() {
+        startActivityForResult(new Intent(this, InputActivity.class), REQUEST_CODE_ADD);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_ADD && resultCode == RESULT_OK) {
+            Hotel hotel = (Hotel) data.getSerializableExtra(HOTEL);
+            mList.add(hotel);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
     private void fillData() {
         Resources resources = getResources();
         String [] arJudul = resources.getStringArray(R.array.places);
         String [] arDeskripsi = resources.getStringArray(R.array.place_desc);
         String [] arDetail = resources.getStringArray(R.array.place_details);
-        String [] arLokasi = resources.getStringArray(R.array.place_locations)
+        String [] arLokasi = resources.getStringArray(R.array.place_locations);
         TypedArray a = resources.obtainTypedArray(R.array.places_picture);
         String [] arFoto = new String [a.length()];
         for (int i = 0; i < arFoto.length; i++)
